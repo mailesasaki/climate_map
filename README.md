@@ -13,6 +13,8 @@ This is a repository containing various scripts for downloading and processing d
 [LOCA2 Website](https://loca.ucsd.edu/) 
 
 ## Details
+|          |      |
+| :----: | :----: |
 | Resolution | 6 x 6 km |
 | Extent | (Central Region of US)[./docs/images/plot_reg.R.png] |
 | Data Location | /data/keeling/a/cristi/a/downscaled_data/LOCA2 |
