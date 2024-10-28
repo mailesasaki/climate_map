@@ -140,4 +140,17 @@ All code is downloaded to /data/keeling/a/cristi/a/downscaled_data/LOCA2.
 
 # NEX-GDDP-CMIP6
 
+[NEX-GDDP-CMIP6 Website](https://www.nccs.nasa.gov/services/data-collections/land-based-products/nex-gddp-cmip6) 
+
+## Details
+
+|    |     |
+| :----: | :----: |
+| Resolution | 25 x 25 km |
+| Extent | Worldwide |
+| Data Location | Google Earth Engine (data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp for ssp370) |
+| Variables | hurs, sfcWind |
+
+| Scenario | Years | 
+| :----: | :---: |
 
