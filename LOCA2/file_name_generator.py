@@ -12,15 +12,14 @@ import fnmatch
 from pathlib import Path
 
 def file_downloader(variable):
-    models_dict_test = \
+    models_dict = \
         { "ACCESS-CM2": {"historical": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, "ssp245": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, 
                          "ssp370": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, "ssp585": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}},
          "ACCESS-ESM1-5": {"historical": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1"}, "ssp245": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1"},
                    "ssp370": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1"}, "ssp585": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1"}}, 
  "AWI-CM-1-1-MR": {"historical": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1"}, "ssp245": {"r1i1p1f1"}, "ssp370": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1"}, 
-                   "ssp585": {"r1i1p1f1"}}, }
-    models_dict = \
-        { "BCC-CSM2-MR": {"historical": {"r1i1p1f1"}, "ssp245": {"r1i1p1f1"}, "ssp370": {"r1i1p1f1"}, "ssp585": {"r1i1p1f1"}}, 
+                   "ssp585": {"r1i1p1f1"}}, 
+         "BCC-CSM2-MR": {"historical": {"r1i1p1f1"}, "ssp245": {"r1i1p1f1"}, "ssp370": {"r1i1p1f1"}, "ssp585": {"r1i1p1f1"}}, 
  "CESM2-LENS": {"historical": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1","r6i1p1f1","r7i1p1f1","r8i1p1f1","r9i1p1f1","r10i1p1f1"}, 
                 "ssp370": {"r1i1p1f1","r2i1p1f1","r3i1p1f1","r4i1p1f1","r5i1p1f1","r6i1p1f1","r7i1p1f1","r8i1p1f1","r9i1p1f1","r10i1p1f1"}}, 
  "CNRM-CM6-1": {"historical": {"r1i1p1f2"}, "ssp245": {"r1i1p1f2"}, "ssp370": {"r1i1p1f2"}, "ssp585": {"r1i1p1f2"}},
