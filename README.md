@@ -132,6 +132,12 @@ This is a repository containing various scripts for downloading and processing d
 
 ## Downloading and Processing
 
+All code is downloaded to /data/keeling/a/cristi/a/downscaled_data/LOCA2.
 
+[Code to download datasets](./LOCA2/file_name_generator.py)
+
+[Code to process datasets](./)
 
 # NEX-GDDP-CMIP6
+
+
