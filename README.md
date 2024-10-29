@@ -147,7 +147,8 @@ All code is downloaded to /data/keeling/a/cristi/a/downscaled_data/LOCA2.
 |    |     |
 | :----: | :----: |
 | Resolution | 25 x 25 km |
-| Extent | Worldwide |
+| Extent (historical, ssp245, ssp585) | Worldwide |
+| Extent (ssp370, downloaded) | Illinois |
 | Data Location | Google Earth Engine (data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp for ssp370) |
 | Variables | hurs, sfcWind |
 
