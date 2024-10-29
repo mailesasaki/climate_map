@@ -201,6 +201,6 @@ All code is downloaded to /data/keeling/a/cristi/a/downscaled_data/LOCA2.
 ssp370 data is downloaded to /data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp/ncs/IL_NEX-GDDP-CMIP6.
 All other data is located on [Google Earth Engine (GEE)](https://developers.google.com/earth-engine/datasets/catalog/NASA_GDDP-CMIP6#description).
 
-[Code to download datasets](./nex_gddp_cmip6_download_il.py)
+[Code to download datasets](./NEX-GDDP-CMIP6/nex_gddp_cmip6_download_il.py)
 
 [Code to process datasets](./)
