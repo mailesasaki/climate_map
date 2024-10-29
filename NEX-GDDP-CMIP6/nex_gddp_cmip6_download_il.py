@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# Courtesy of Alexandru Dumitrescu (ad87@illinois.edu)
 
 
 import os
@@ -17,16 +17,9 @@ print("Current Working Directory:", os.getcwd())
 # 
 # The file inventory is available here: "latest_inventory.csv".
 
-# In[4]:
-
-
 import pandas as pd
 
 # List of models to check
-# models = [ 
-#    "CNRM-ESM2-1","EC-Earth3-Veg-LR", "IPSL-CM6A-LR", "MIROC6", 
-#     "MPI-ESM1-2-HR", "MPI-ESM1-2-LR"
-# ]
 
 models = [ 
     "CNRM-ESM2-1", "EC-Earth3-Veg-LR", "IPSL-CM6A-LR", 
@@ -41,6 +34,7 @@ models = [
 # List of variables to check
 variables = ["sfcWind"]
 
+# List of scenarios to check
 scenarios = ['ssp370']
 
 # Create a combined regex pattern for models and variables
@@ -56,10 +50,6 @@ df = df_latest_inventory[df_latest_inventory['file_path'].str.contains(model_pat
 # Display the filtered DataFrame
 df
 
-
-# In[7]:
-
-
 s3_base_path = "s3://nex-gddp-cmip6"
 input_path = s3_base_path.join(df[2:2])
 # Construct the full S3 path
@@ -74,9 +64,6 @@ print(df)
 
 
 # Verify data frame
-
-# In[8]:
-
 
 # Print the first row of the Out_File column
 print(df['S3_Path'].iloc[0])
@@ -98,9 +85,6 @@ print(unique_out_dirs)
 
 # Create directories if they don't exist
 
-# In[9]:
-
-
 for directory in unique_out_dirs:
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -110,9 +94,6 @@ for directory in unique_out_dirs:
 
 
 # Subset data and write cropped data
-
-# In[6]:
-
 
 import s3fs
 import xarray as xr
@@ -155,12 +136,6 @@ def process_file(file_path, out_dir, out_file, min_lat = min_lat, max_lat = max_
         cropped_hurs.to_netcdf(out_path)
         print(f"Saved cropped file to: {out_path}")
 
-
-
-
-# In[22]:
-
-
 # # test function
 # file_path = df['S3_Path'].iloc[0]
 # print(file_path)
@@ -173,7 +148,6 @@ def process_file(file_path, out_dir, out_file, min_lat = min_lat, max_lat = max_
 
 # Iterate through the DataFrame and process each file
 
-# In[7]:
 
 
 for index, row in df.iterrows():
