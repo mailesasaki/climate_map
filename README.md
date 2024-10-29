@@ -16,7 +16,7 @@ This is a repository containing various scripts for downloading and processing d
 |          |      |
 | :----: | :----: |
 | Resolution | 6 x 6 km |
-| Extent | (Central Region of US)[./docs/images/plot_reg.R.png] |
+| Extent | [Central Region of US](./docs/images/plot_reg.R.png) |
 | Data Location | /data/keeling/a/cristi/a/downscaled_data/LOCA2 |
 | Variables | tasmin, tasmax, pr |
 
