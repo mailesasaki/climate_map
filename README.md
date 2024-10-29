@@ -151,6 +151,54 @@ All code is downloaded to /data/keeling/a/cristi/a/downscaled_data/LOCA2.
 | Data Location | Google Earth Engine (data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp for ssp370) |
 | Variables | hurs, sfcWind |
 
-| Scenario | Years | 
-| :----: | :---: |
+| Scenario | Years | Data Source |
+| :----: | :---: | :---: 
+| historical | 1950-2014 | [GEE](https://developers.google.com/earth-engine/datasets/catalog/NASA_GDDP-CMIP6#description) |
+| ssp245 | 2015-2100 | GEE |
+| ssp370 | 2015-2100 | [Amazon S3](https://aws.amazon.com/marketplace/pp/prodview-k6adk576fiwmm) |
+| ssp585 | 2015-2100 | GEE |
 
+## Models
+- ACCESS-CM2
+- ACCESS-ESM1-5
+- BCC-CSM2-MR
+- CESM2
+- CESM2-WACCM
+- CMCC-CM2-SR5
+- CMCC-ESM2
+- CNRM-CM6-1
+- CNRM-ESM2-1
+- CanESM5
+- EC-Earth3
+- EC-Earth3-Veg-LR
+- FGOALS-g3
+- GFDL-CM4 (grid_label=gr1)
+- GFDL-ESM4
+- GISS-E2-1-G
+- HadGEM3-GC31-LL
+- HadGEM3-GC31-MM
+- IITM-ESM
+- INM-CM4-8
+- INM-CM5-0
+- IPSL-CM6A-LR
+- KACE-1-0-G
+- KIOST-ESM
+- MIROC-ES2L
+- MIROC6
+- MPI-ESM1-2-HR
+- MPI-ESM1-2-LR
+- MRI-ESM2-0
+- NESM3
+- NorESM2-LM
+- NorESM2-MM
+- TaiESM1
+- UKESM1-0-LL
+
+- ## Downloading and Processing
+
+ssp370 data is downloaded to /data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp/ncs/IL_NEX-GDDP-CMIP6.
+All other data is located on [Google Earth Engine (GEE)](https://developers.google.com/earth-engine/datasets/catalog/NASA_GDDP-CMIP6#description).
+
+[Code to download datasets](./)
+
+[Code to process datasets](./)
