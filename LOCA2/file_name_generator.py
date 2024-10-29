@@ -10,8 +10,9 @@ from bs4 import BeautifulSoup
 import requests
 import fnmatch
 from pathlib import Path
+import argparse
 
-def file_downloader(variable):
+def file_downloader(variable, path_out):
     models_dict = \
         { "ACCESS-CM2": {"historical": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, "ssp245": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, 
                          "ssp370": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, "ssp585": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}},
@@ -60,33 +61,37 @@ def file_downloader(variable):
  "NorESM2-MM": {"historical": {"r1i1p1f1","r2i1p1f1"}, "ssp245": {"r1i1p1f1","r2i1p1f1"}, "ssp370": {"r1i1p1f1"}, "ssp585": {"r1i1p1f1"}}, 
  "TaiESM1": {"historical": {"r1i1p1f1"}, "ssp245": {"r1i1p1f1"}, "ssp370": {"r1i1p1f1"}} }
     
-    #full_dataset_list = []
-    for model in models_dict_test:
-        for scenario in models_dict_test[model]:
-            for memberid in models_dict_test[model][scenario]:
+    for model in models_dict:
+        for scenario in models_dict[model]:
+            for memberid in models_dict[model][scenario]:
+                # Putting together the URL of the data location
                 path_string = ("https://cirrus.ucsd.edu/~pierce/LOCA2/CONUS_regions_split/" + model + "/cent/0p0625deg/" + memberid + "/" + 
                                scenario + "/" + variable + "/")
-                path_soup = BeautifulSoup(urllib.request.urlopen(path_string), 'html.parser')
+                path_soup = BeautifulSoup(urllib.request.urlopen(path_string), 'html.parser') # Parsing the website to look for the download
                 file_list = []
-                for file in path_soup.find_all('a'):
+                for file in path_soup.find_all('a'): # Pulling the links
                     file_list.append(file.get('href'))
                 file_string = (variable + "." + model + "." + scenario + "." + memberid + ".*.LOCA_16thdeg_*.cent.nc")
-                filtered = fnmatch.filter(file_list, file_string)
-                directory = (model + "/" + scenario + "/")
+                filtered = fnmatch.filter(file_list, file_string) # Looking for specifically the full daily dataset
+                directory = (path_out + "/" + model + "/" + scenario + "/") # Pulling out the directory to download into
                 print(directory)
                 for filefiltered in filtered:
-                  full_string = path_string + filefiltered
+                  full_string = path_string + filefiltered # Putting together the full URL
                   print(full_string)
                 
                   opener = urllib.request.URLopener()
                   if not Path(directory+filefiltered).is_file():
-                    opener.retrieve(full_string, (directory+filefiltered))
+                    opener.retrieve(full_string, (directory+filefiltered)) # Downloading
                     print("Downloaded!")
-                #full_dataset_list.append(full_string)
-    #return full_dataset_list
+                  else:
+                    print("Already downloaded. Skipping")
     
-datasets = file_downloader("pr")
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--variable", required=True, type=str)
+  parser.add_argument("--path_out", required=True, type=str)
+  args = parser.parse_args()
 
-#with open("LOCA2_filenames.txt", 'w') as f:
-#    for file in datasets:
-#        f.write(f"{file}\n")
+  variable = args.variable
+  path_out = args.path_out
+  file_downloader(variable, path_out)
