@@ -13,6 +13,19 @@ from pathlib import Path
 import argparse
 
 def file_downloader(variable, path_out):
+    """
+    
+    This function downloads all daily LOCA2 files for a given variable into a given directory.
+    
+    Input:
+    - variable (str) - pr (Precipitation), tasmax (Maximum temperature), or tasmin (Minimum temperature)
+    - path_out (str) - Location to download the LOCA2 files to 
+        - This directory needs subdirectories set up by create_dir.sh to work.
+    
+    Output:
+    - None
+
+    """
     models_dict = \
         { "ACCESS-CM2": {"historical": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, "ssp245": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, 
                          "ssp370": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}, "ssp585": {"r1i1p1f1","r2i1p1f1","r3i1p1f1"}},
