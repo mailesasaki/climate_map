@@ -32,7 +32,7 @@ models = [
 
 
 # List of variables to check
-variables = ["sfcWind"]
+variables = ["huss"]
 
 # List of scenarios to check
 scenarios = ['ssp370']
