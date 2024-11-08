@@ -18,7 +18,7 @@ This is a repository containing various scripts for downloading and processing d
 | Resolution | 6 x 6 km |
 | Extent | [Central Region of US](./docs/images/plot_reg.R.png) |
 | Data Location | /data/keeling/a/cristi/a/downscaled_data/LOCA2 |
-| Variables | tasmin, tasmax, pr |
+| Variables | tasmin [K], tasmax [K], pr |
 
 | Scenarios | Years |
 | :-----: | :-----: |
@@ -151,7 +151,7 @@ All code is downloaded to /data/keeling/a/cristi/a/downscaled_data/LOCA2.
 | Extent (historical, ssp245, ssp585) | Worldwide |
 | Extent (ssp370, downloaded) | Illinois |
 | Data Location | Google Earth Engine (data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp for ssp370) |
-| Variables | hurs, sfcWind |
+| Variables | huss [Mass fraction], sfcWind [m/s] |
 
 | Scenario | Years | Data Source |
 | :----: | :---: | :---: 
