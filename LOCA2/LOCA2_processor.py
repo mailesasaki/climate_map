@@ -3,6 +3,8 @@ import glob
 import pandas as pd
 import os
 import argparse
+from datetime import date
+
 
 def loca2_processing(scenario, variable, year_start, year_end):
     """
@@ -102,7 +104,8 @@ if __name__ == "__main__":
     dataset = loca2_processing(scenario, variable, year_start, year_end)
           
     # Saving the dataset
-    output_file = out_path + '/LOCA2_IL_' + variable + '_' + scenario + '_' + str(year_start) + '-' + str(year_end) + '.nc'
+    output_file = (out_path + '/LOCA2_IL_' + variable + '_' + scenario + '_' + str(year_start) + '-' + str(year_end) + '_' + 
+                   str(date.today()) + '.nc')
     dataset.to_netcdf(output_file)
     print('Dataset saved to ' + output_file)
 

@@ -1,5 +1,7 @@
 README.md
 setup.py
+ERA5/ERA5_processor.py
+ERA5/__init__.py
 LOCA2/LOCA2_download.py
 LOCA2/LOCA2_processor.py
 LOCA2/__init__.py
