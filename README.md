@@ -1,11 +1,12 @@
 # Introduction 
 
-This is a repository containing various scripts for downloading and processing data from various downscaled datasets. 
+This is a repository containing various scripts for downloading and processing data from various downscaled and observational datasets. 
 
 # Table of Contents 
 
 1. [LOCA2](#LOCA2)
 2. [NEX-GDDP-CMIP6](#NEX-GDDP-CMIP6)
+3. [ERA5](#ERA5)
 
    
 # LOCA2
@@ -201,6 +202,21 @@ All code is downloaded to /data/keeling/a/cristi/a/downscaled_data/LOCA2.
 ssp370 data is downloaded to /data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp/ncs/IL_NEX-GDDP-CMIP6.
 All other data is located on [Google Earth Engine (GEE)](https://developers.google.com/earth-engine/datasets/catalog/NASA_GDDP-CMIP6#description).
 
-[Code to download datasets](./NEX-GDDP-CMIP6/nex_gddp_cmip6_download_il.py)
+[Code to download datasets](./NEX_GDDP_CMIP6/nex_gddp_cmip6_download_il.py)
 
-[Code to process datasets](./)
+[Code to process datasets](./NEX_GDDP_CMIP6/NEX_GDDP_CMIP6_processor.py)
+
+# ERA5
+
+[ERA5 Website](https://www.ecmwf.int/en/forecasts/dataset/ecmwf-reanalysis-v5)
+
+## Details
+
+|   |   |
+| :---: | :---: |
+| Resolution | 31 km |
+| Extent | Worldwide |
+| Data Location | [Google Cloud](https://cloud.google.com/storage/docs/public-datasets/era5) |
+| Variables | [Currently Available Datasets](https://github.com/mailesasaki/climate_map/blob/main/ERA5/ERA5_Guide.ipynb) |
+| Time Extent | 1980 - 2021 |
+
