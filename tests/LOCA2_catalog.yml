@@ -1,0 +1,16 @@
+metadata:
+  version: 1
+  parameters:
+    bucket:
+      type: str
+      description: description
+      default: test_bucket
+sources:
+  param_source:
+    driver: parquet
+    description: description
+    args:
+      urlpath: s3://{{bucket}}/file.parquet
+  subcat:
+    driver: yaml_file
+    path: "{{CATALOG_DIR}}/other.yaml"

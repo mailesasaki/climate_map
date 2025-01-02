@@ -21,44 +21,21 @@ def loca2_processing(scenario, variable, year_start, year_end):
      - dataset (Dataset) - Contains data of given variable in Illinois within the designated 
     
     """
-    # Locating where data is kept
-    base_directory = "/data/keeling/a/cristi/a/downscaled_data/LOCA2/"
-    models = next(os.walk(base_directory))[1]
+    # Locating the catalog
+    catalog = pd.read_csv('/data/keeling/a/cristi/a/downscaled_data/LOCA2/LOCA2_catalog.csv')
 
     list_dataset_model = []
-    # Iterate over models and retrieve files
-    for model in models: 
+    for model in catalog.model.unique(): 
         print(model)
-        directory = base_directory +  model + '/' + scenario + '/'
-        all_files = glob.glob(directory + '/*')
-        
-        ens_mem = []
         # Looking to see if file exists for specified requirements
-        for file in all_files: 
-            ens_mem.append(file.split('.')[3])
-        if not ens_mem:
-            continue
-        list_dataset_mem = []
+        cat_pull = catalog.loc[(catalog['variable']==variable) & (catalog['model']==model) & (catalog['scheme']==scenario)]
         # For each ensemble member (i.e. r1i1p1f1, r2i1p1f1, etc.)
-        for mem in list(set(ens_mem)): 
-            if scenario == 'historical': # Pulling historical files
-                files_mem = glob.glob(directory + '/' + variable + '.' + model + '.' + scenario + '.' + mem + '.' 
-                                       + '*')
-            # Pulling appropriate files for ssp scenarios
-            else: 
-                files_mem = []
-                if year_start < 2045:
-                    files_mem.append(glob.glob(directory + '/' + variable + '.' + model + '.' + scenario + '.' + mem +
-                                               '.2015-2044.*')[0])
-                if year_end >= 2075:
-                    files_mem.append(glob.glob(directory + '/' + variable + '.' + model + '.' + scenario + '.' + mem + 
-                                              '.2075-2100.*')[0])
-                if year_end >= 2045 and year_start < 2075: 
-                    files_mem.append(glob.glob(directory + '/' + variable + '.' + model + '.' + scenario + '.' + mem + 
-                                              '.2045-2074.*')[0])
+        list_dataset_mem = []
+        for mem in cat_pull.experiment_id.unique(): 
+            mem_data = cat_pull.loc[(cat_pull['experiment_id']==mem)]['path'].to_list()
             if model=='CanESM5' and mem=='r3i1p1f1' and scenario=='ssp585' and variable=='pr':
                 continue
-            dataset_mem = xr.open_mfdataset(files_mem,combine="by_coords", use_cftime=True) # Opening datasets
+            dataset_mem = xr.open_mfdataset(mem_data, combine="by_coords", use_cftime=True) # Opening datasets
             if variable not in dataset_mem.variables:
                 continue
             # Assigning new time coordinates so that datasets from different models cooperate

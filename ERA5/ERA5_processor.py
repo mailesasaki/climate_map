@@ -30,7 +30,7 @@ def interpolate(data, tri, mesh):
     result = np.einsum('...i,...i', data[:, tri.simplices[indices]], c)
     return np.where(indices == -1, np.nan, result)
 
-def era5_processing(variable, year_start, year_end):
+def era5_processing(variable, year_start, year_end, dataset):
     """
     Code to process ERA5 Data over the state of Illinois
     
@@ -47,14 +47,23 @@ def era5_processing(variable, year_start, year_end):
     fs = fsspec.filesystem('gs')
     fs.ls('gs://gcp-public-data-arco-era5/co/')
     
-    # Opening dataset with zarr
-    reanalysis = xr.open_zarr(
-        'gs://gcp-public-data-arco-era5/co/single-level-reanalysis.zarr', 
-        chunks={'time': 48},
-        consolidated=True,
-        )
+    if dataset == 'raw':
+        # Opening dataset with zarr
+        reanalysis = xr.open_zarr(
+            'gs://gcp-public-data-arco-era5/co/single-level-reanalysis.zarr', 
+            chunks={'time': 48},
+            consolidated=True,
+            )
     
-        # Dates
+    if dataset == 'analysis_ready':
+        # Opening dataset with zarr
+        reanalysis = xr.open_zarr(
+            'gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3', 
+            chunks={'time': 48},
+            consolidated=True,
+            )
+
+    # Dates
     i_date = str(year_start) + '-01-01'
     f_date = str(year_end)   + '-12-31'
     
@@ -67,19 +76,24 @@ def era5_processing(variable, year_start, year_end):
     lat_min = 36
     lat_max = 43.5
     
-    illinois_ds = recent_an.where(
+    illinois_ds = era5_var.where(
     (recent_an.longitude > lon_min) & (recent_an.latitude > lat_min) &
     (recent_an.longitude < lon_max) & (recent_an.latitude < lat_max),
     drop=True)
     
-    tri = build_triangulation(illinois_ds.longitude, illinois_ds.latitude)
-    longitude = np.linspace(lon_min, lon_max, num=round(lon_max-lon_min)*4+1)
-    latitude = np.linspace(lat_min, lat_max, num=round(lat_max-lat_min)*4+1)
+    if dataset == 'raw':
+        tri = build_triangulation(illinois_ds.longitude, illinois_ds.latitude)
+        longitude = np.linspace(lon_min, lon_max, num=round(lon_max-lon_min)*4+1)
+        latitude = np.linspace(lat_min, lat_max, num=round(lat_max-lat_min)*4+1)
     
-    mesh = np.stack(np.meshgrid(longitude, latitude, indexing='ij'), axis=-1)
-    mesh_int = interpolate(illinois_ds[variable].values, tri, mesh)
-    fin_array = xr.DataArray(mesh_int, 
+        mesh = np.stack(np.meshgrid(longitude, latitude, indexing='ij'), axis=-1)
+        mesh_int = interpolate(illinois_ds[variable].values, tri, mesh)
+        
+        fin_array = xr.DataArray(mesh_int, 
                              coords=[('time', illinois_ds.time.data), ('longitude', longitude), ('latitude', latitude)])
+    else:
+        fin_array = illinois_ds
+        
     fin_array = fin_array.rename({'longitude':'lon', 'latitude':'lat'})
     
     return fin_array
@@ -90,14 +104,16 @@ if __name__ == "__main__":
     parser.add_argument("--year_start", required=True, type=int)
     parser.add_argument("--year_end", required=True, type=int)
     parser.add_argument("--out_path", required=True, type=str)
+    parser.add_argument("--dataset", required=True, type=str)
     args = parser.parse_args()
 
     variable = args.variable
     year_start = args.year_start
     year_end = args.year_end
     out_path = args.out_path
+    dataset = args.dataset
     
-    dataarray = era5_processing(variable, year_start, year_end)
+    dataarray = era5_processing(variable, year_start, year_end, dataset)
     
     # Saving the dataset
     output_file = (out_path + '/ERA5_IL_' + variable + '_' + str(year_start) + '-' + str(year_end) + '_' + 
