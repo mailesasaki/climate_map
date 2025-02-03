@@ -62,6 +62,7 @@ def era5_processing(variable, year_start, year_end, dataset):
             chunks={'time': 48},
             consolidated=True,
             )
+        print('Done')
 
     # Dates
     i_date = str(year_start) + '-01-01'
