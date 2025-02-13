@@ -31,6 +31,7 @@ def loca2_processing(scenario, variable, year_start, year_end):
         cat_pull = catalog.loc[(catalog['variable']==variable) & (catalog['model']==model) & (catalog['scheme']==scenario)]
         # For each ensemble member (i.e. r1i1p1f1, r2i1p1f1, etc.)
         list_dataset_mem = []
+        i = 0
         for mem in cat_pull.experiment_id.unique(): 
             mem_data = cat_pull.loc[(cat_pull['experiment_id']==mem)]['path'].to_list()
             if model=='CanESM5' and mem=='r3i1p1f1' and scenario=='ssp585' and variable=='pr':
@@ -43,24 +44,25 @@ def loca2_processing(scenario, variable, year_start, year_end):
                                             freq='D',
                                             periods=len(dataset_mem.time))).sel(time=slice(str(year_start), str(year_end)))
             # Assigning ensemble member name
-            dataset_mem['ens_mem'] = mem 
+            dataset_mem['ens_mem'] = i 
             list_dataset_mem.append(dataset_mem)
+            i += 1
         if len(list_dataset_mem) == 0:
             continue
         # If only one dataset, assign model to that dataset
         elif len(list_dataset_mem) == 1: 
             dataset_model = list_dataset_mem[0]
-        # If multiple, concatenate then assign    
+            dataset_model = dataset_model.expand_dims(dim={'ens_mem':1})
+            dataset_model = dataset_model.assign_coords()
         else: 
             dataset_model = xr.concat(list_dataset_mem, dim='ens_mem', coords='minimal', compat='override')
-            dataset_model = dataset_model.mean('ens_mem') # Take mean over ensemble
         # Assign model name
         dataset_model['model'] = model
         # Picking out the Illinois region
         dataset_model = dataset_model.sel(lat=slice(36,43.5)).sel(lon=slice(267.2,274))
         list_dataset_model.append(dataset_model)
     # Appending all the datasets for each model together
-    dataset = xr.concat(list_dataset_model, dim='model', coords='minimal', compat='override')
+    dataset = xr.concat(list_dataset_model, dim='model')
     return dataset
 
     
