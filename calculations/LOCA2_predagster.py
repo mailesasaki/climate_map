@@ -19,7 +19,7 @@ class OpenLocaCat:
         self.catalog = catalog
     
     def load(self, query):
-        catalog_subset = catalog.search(**query)
+        catalog_subset = self.catalog.search(**query)
         
         dsets = catalog_subset.to_dataset_dict(
                                     xarray_open_kwargs={"use_cftime": True, "engine": 'zarr'},
