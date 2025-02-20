@@ -8,6 +8,7 @@ LOCA2/__init__.py
 NEX_GDDP_CMIP6/NEX_GDDP_CMIP6_processor.py
 NEX_GDDP_CMIP6/__init__.py
 NEX_GDDP_CMIP6/nex_gddp_cmip6_download_il.py
+calculations/LOCA2_predagster.py
 calculations/__init__.py
 calculations/calculations.py
 climatemap.egg-info/PKG-INFO
