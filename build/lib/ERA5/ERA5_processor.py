@@ -5,6 +5,11 @@ import numpy as np
 import os
 import argparse
 from datetime import date
+from calculations.calculations import vapor_pressure
+from calculations.calculations import wind_tot
+import metpy
+from metpy.units import units 
+
 
 # Using code from https://github.com/google-research/arco-era5/blob/main/docs/0-Surface-Reanalysis-Walkthrough.ipynb 
 
@@ -47,6 +52,20 @@ def era5_processing(variable, year_start, year_end, dataset):
     fs = fsspec.filesystem('gs')
     fs.ls('gs://gcp-public-data-arco-era5/co/')
     
+            
+    if variable == 'vapor_pressure':
+        variable = '2m_dewpoint_temperature'
+        calc = 'vapor_pressure'
+    elif variable == 'sfcWind':
+        variable = ['10m_u_component_of_wind','10m_v_component_of_wind']
+        calc = 'sfcWind'
+    elif variable == 'relative_humidity':
+        variable = ['2m_temperature','2m_dewpoint_temperature']
+        calc = 'relative_humidity'
+    else:
+        calc = ''
+        
+
     if dataset == 'raw':
         # Opening dataset with zarr
         reanalysis = xr.open_zarr(
@@ -86,7 +105,7 @@ def era5_processing(variable, year_start, year_end, dataset):
         tri = build_triangulation(illinois_ds.longitude, illinois_ds.latitude)
         longitude = np.linspace(lon_min, lon_max, num=round(lon_max-lon_min)*4+1)
         latitude = np.linspace(lat_min, lat_max, num=round(lat_max-lat_min)*4+1)
-    
+            
         mesh = np.stack(np.meshgrid(longitude, latitude, indexing='ij'), axis=-1)
         mesh_int = interpolate(illinois_ds[variable].values, tri, mesh)
         
@@ -96,6 +115,16 @@ def era5_processing(variable, year_start, year_end, dataset):
         fin_array = illinois_ds
         
     fin_array = fin_array.rename({'longitude':'lon', 'latitude':'lat'})
+    
+    if calc=='vapor_pressure':
+        dewpoint = fin_array - 273.15
+        fin_array = vapor_pressure(dewpoint)
+    elif calc=='sfcWind':
+        fin_array,_ = wind_tot(fin_array['10m_u_component_of_wind'], fin_array['10m_v_component_of_wind'])
+    elif calc=='relative_humidity':
+        fin_array = metpy.calc.relative_humidity_from_dewpoint(
+                                        fin_array['2m_temperature'] * units.K,
+                                        fin_array['2m_dewpoint_temperature'] * units.K)
     
     return fin_array
 

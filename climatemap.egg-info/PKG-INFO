@@ -1,13 +1,13 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.1
 Name: climatemap
 Version: 0.1
 Summary: A script to access downscaled CMIP6 data for use in Illinois
 Home-page: https://github.com/mailesasaki/climate_map
 Author: Maile Sasaki
 Author-email: mailes2@illinois.edu
+License: UNKNOWN
+Platform: UNKNOWN
 Description-Content-Type: text/markdown
-Dynamic: author
-Dynamic: author-email
-Dynamic: description-content-type
-Dynamic: home-page
-Dynamic: summary
+
+UNKNOWN
+

@@ -4,6 +4,8 @@ import xee
 import xarray as xr
 import glob
 import argparse
+from calculations.calculations import vapor_pressure
+
 
 def nexgddpcmip6_processing(scenario, variable, year_start, year_end):
     """
@@ -11,7 +13,7 @@ def nexgddpcmip6_processing(scenario, variable, year_start, year_end):
     
     Inputs:
     - scenario (str) - "historical", "ssp245", "ssp370", "ssp585"
-    - variable (str) - "huss" (specific humidity) or "sfcWind" (surface level wind)
+    - variable (str or list) - "huss" (specific humidity) or "sfcWind" (surface level wind)
     - year_start (int) - First year you want
     - year_end (int) - Last year you want (inclusive)
     Outputs:
@@ -29,14 +31,31 @@ def nexgddpcmip6_processing(scenario, variable, year_start, year_end):
     i_date = str(year_start) + '-01-01'
     f_date = str(year_end)   + '-12-31'
     
+    if variable == 'vp':
+        variable = ['hurs', 'tas']
+        calc = 'vp'   
+    else:
+        calc = ''
+        
+        
     dataset_list = []
     if scenario == 'ssp370':
         base_directory = '/data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp/ncs/IL_NEX-GDDP-CMIP6/'
         
         for model in model_list:
-            nexgddp_filtered = glob.glob(base_directory + model + '/ssp370/*/' + variable + '/' + variable + '_day_' + model + 
-                                        '_ssp370_*')
-            if len(nexgddp_filtered) > 0: 
+            nexgddp_filtered = []
+            var_counter = True
+            if type(variable) == str:
+                variable = [variable]
+            for var in variable:
+                var_find = glob.glob(base_directory + model + '/ssp370/*/' + var + '/' 
+                                              + var + '_day_' + model +  '_ssp370_*')
+                if len(var_find) > 0:
+                    nexgddp_filtered += var_find
+                else:
+                    print(model, "doesn't have sufficient variables")
+                    var_counter = False
+            if var_counter == True: 
                 filtered_dataset = xr.open_mfdataset(nexgddp_filtered,combine="by_coords", use_cftime=True) # Opening datasets
                 filtered_dataset = filtered_dataset.assign(time=pd.date_range(start=
                                                                               (str(filtered_dataset.time[0].values).split(' ')[0]),
@@ -59,10 +78,13 @@ def nexgddpcmip6_processing(scenario, variable, year_start, year_end):
         # Picking out the Illinois region
         illinois = ee.Geometry.Rectangle([267.2,36,274,43.5])
 
-        
+        if type(variable) == str:
+            variable = [variable]
+                
         for model in model_list:
-            if variable not in nexgddp.filter(ee.Filter.eq('model',model)).first().bandNames().getInfo():
-                print(variable + ' Not in ' + model)
+            if False in [True if var in nexgddp.filter(ee.Filter.eq('model',model)).first().bandNames().getInfo() 
+                         else False for var in variable]:
+                print(model, "doesn't have sufficient variables")
                 continue
             if model == 'GFDL-CM4':
                 nexgddp_filtered = (nexgddp.select(variable).filterDate(i_date, f_date)
@@ -81,12 +103,19 @@ def nexgddpcmip6_processing(scenario, variable, year_start, year_end):
                 filtered_dataset.load()
                 dataset_list.append(filtered_dataset)
     
+    if len(dataset_list)==0:
+        raise ValueError("Dataset not available with given specifications")
+        
     dataset = xr.concat(dataset_list, dim='model', coords='minimal', compat='override')
+    
+
+    if calc=='vp':
+        tas_C = dataset.tas - 273.15
+        dataset = (vapor_pressure(tas_C) * dataset.hurs)/100
     
     # Changing from -180-180 to 0-360 longitude scale
     dataset = dataset.assign_coords({"lon":dataset.lon%360})
     return dataset
-    
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
