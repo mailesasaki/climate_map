@@ -13,7 +13,6 @@ def complete_loca2(scenario, year_start, year_end):
         - scenario (str) - historical, ssp245, ssp370, ssp585
         - year_start (int) - First year you'd like to request
         - year_end (int) - Last year you'd like to request (inclusive)
-        
     Output:
         - data_full (Dataset) - Contains tasmax, tasmin, precip from year_start to year_end in scenario
         
@@ -26,13 +25,14 @@ def complete_loca2(scenario, year_start, year_end):
     data_full = xr.merge([data_tasmax, data_tasmin, data_precip], fill_value=np.nan)
     return data_full
 
+
+
 def stats(dataset):
     """    
     Calculates statistics across the models for all variables
     
     Input:
         - dataset (Dataset or Dataarray) - Needs a dimension called "model"
-        
     Output:
         - data_stats (Dataset) - Contains calculations of the mean, standard deviation, and variance
             of the dataset. All statistics stored in a coordinate called "stats"
@@ -51,7 +51,9 @@ def stats(dataset):
     data_stats = xr.concat([mean, stdev, variance], 'stats')
     return data_stats
 
-def heat_index(RH, T):
+
+
+def heat_index(RH, t2m):
     """
     https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
 
@@ -59,13 +61,13 @@ def heat_index(RH, T):
     
     Inputs:
         RH (DataArray) - Should be in decimal format
-        T  (DataArray) - Should be in Kelvins
-        
+        t2m  (DataArray) - Should be in Kelvins
     Outputs:
-        hi_alone (DataArray) - Heat index array (in F)
+        hi_alone (DataArray) - Heat index array (in K)
+        
     """
     # Convert to Fahrenheit
-    T_F = ((T - 273.15) * 1.8) + 32
+    T_F = ((t2m - 273.15) * 1.8) + 32
 
     # Convert to relative humidity
     RH_p = RH * 100
@@ -111,30 +113,47 @@ def heat_index(RH, T):
     
     # Picking out the heat index dataarray alone
     hi_alone = hi_set['heat_index']
+    hi_alone = ((hi_alone - 32) / 1.8) + 273.15 # Fahrenheit to Kelvin
 
     return hi_alone
 
+
+
 def wind_tot(uwind, vwind):
+    """
+    Calculates wind magnitude and angle
+    
+    Inputs:
+        uwind (DataArray) - E-W wind component (m/s)
+        vwind (DataArray) - N-S wind component (m/s)
+    Outputs:
+        wind_mag (DataArray) - Wind magnitude (m/s)
+        wind_dir (DataArray) - Wind angle (deg)
+        
+    """
     wind_mag = np.sqrt(vwind**2 + uwind**2)
     wind_dir = np.arctan2(vwind/wind_mag, uwind/wind_mag)
     wind_dir = wind_dir * 180/np.pi
     
     return wind_mag, wind_dir
 
-def wind_chill(T, sfcWind):
+
+
+def wind_chill(t2m, wind):
     """
     https://www.weather.gov/safety/cold-wind-chill-chart
     
     Calculates wind chill in array format
     
     Inputs:
-        T (DataArray) - Temperature in Kelvin format
-        sfcWInd (DataArray) - Surface Wind in m/s
+        t2m (DataArray) - Temperature in Kelvin format
+        wind (DataArray) - Surface Wind in m/s
     Output:
-        wind_chill_alone (DataArray) - Wind Chill array (In F) 
+        wind_chill_alone (DataArray) - Wind Chill array (in K) 
+        
     """
-    T_F = T * 9/5 - 459.67 # Convert to Fahrenheit
-    sfcWind_mph = 0.44704 * sfcWind # Convert to mph
+    T_F = t2m * 9/5 - 459.67 # Convert to Fahrenheit
+    sfcWind_mph = wind/0.44704  # Convert to mph
     sfcWind_mph = sfcWind_mph.rename('surface_wind')
     
     # Calculate wind chill
@@ -151,64 +170,96 @@ def wind_chill(T, sfcWind):
                                               np.nan)    
 
     wind_chill_alone = wind_chill_set['wind_chill']
+    wind_chill_alone = ((wind_chill_alone - 32) / 1.8) + 273.15 # Convert Fahrenheit to Kelvin
     
     return wind_chill_alone
 
-def apparent_temperature(t2m, wind, vp):
+
+
+def apparent_temperature(t2m, vp, wind):
     """
     https://confluence.ecmwf.int/display/FCST/New+parameters%3A+heat+and+cold+indices%2C+mean+radiant+temperature+and+globe+temperature
     
     Inputs:
-        t2m - (DataArray) 2m temperature (C)
-        wind - (DataArray) 10 m wind speed (m/s)
+        t2m - (DataArray) 2m temperature (K)
         vp - (DataArray) 2m vapor pressure (hPa)
+        wind - (DataArray) 10 m wind speed (m/s)
     Outputs: 
-        apparent_temperature - (DataArray) Apparent temperature (in C)
+        apparent_temperature - (DataArray) Apparent temperature (in K)
+        
     """
+    
+    t2m_C = t2m - 273.15 # Kelvin to Celsius
     
     apparent_temperature = t2m + 0.33*vp - 0.7*wind - 4.0
     
+    apparent_temperature += 273.15 # Celsius to Kelvin
+    
     return apparent_temperature
+
+
 
 def vapor_pressure(dewpoint):
     """
     https://www.weather.gov/epz/wxcalc_vaporpressure
     
     Returns vapor pressure in units of hPa/mb
+    
+    Input:
+        dewpoint - (DataArray) 2m dewpoint temperature (K)
+    Output:
+        e - (DataArray) Vapor pressure (mb)
+        
     """
-    e = 6.11 * 10**((7.5*dewpoint)/(237.3+dewpoint))
+    dewpoint_C = dewpoint - 273.15 # Kelvin to Celsius
+    
+    e = 6.11 * 10**((7.5*dewpoint_C)/(237.3+dewpoint_C))
+    
     return e
 
-def normal_effective_temperature(t2m, RH, wind_speed):
+
+
+def normal_effective_temperature(t2m, RH, wind):
     """
     Calculates normal effective temperature for a DataArray
     
     Inputs:
-        t2m - (DataArray) 2m air temperature (C)
+        t2m - (DataArray) 2m air temperature (K)
         RH - (DataArray) 2m relative humidity (%)
-        wind_speed - (DataArray) wind speed at 1.2 m above the ground (m/s)
+        wind - (DataArray) wind speed at 1.2 m above the ground (m/s)
     Output:
-        net - (DataArray) normal effective temperature (C)
+        net - (DataArray) normal effective temperature (K)
+        
     """
     
+    t2m_C = t2m - 273.15 # Kelvin to Celsius
+    
     net = (37 - 
-           ((37-t2m)/(0.68-(0.0014*RH)+(1/(1.76+(1.4*wind_speed**0.75)))))
-           - (0.29*t2m*(1-(0.01*RH))))
+           ((37-t2m_C)/(0.68-(0.0014*RH)+(1/(1.76+(1.4*wind**0.75)))))
+           - (0.29*t2m_C*(1-(0.01*RH))))
+    
+    net += 273.15 # Celsius to Kelvin
     
     return net
+
+
 
 def humidex(t2m, vp):
     """
     Calculate humidex for a DataArray
     
     Inputs:
-        t2m (DataArray) - 2m air temperature in C
+        t2m (DataArray) - 2m air temperature in K
         vp (DataArray) - vapor pressure in hPa
-        
     Output:
-        humidex (DataArray) - Humidex in C
+        humidex (DataArray) - Humidex in K
+        
     """
     
-    humidex = t2m + 0.5555*(vp - 10)
+    t2m_C = t2m - 273.15 # Kelvin to Celsius
+    
+    humidex = t2m_C + 0.5555*(vp - 10) 
+    
+    humidex += 273.15 # Celsius to Kelvin
     
     return humidex

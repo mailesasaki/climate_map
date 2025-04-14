@@ -38,11 +38,15 @@ def interpolate(data, tri, mesh):
 def era5_processing(variable, year_start, year_end, dataset):
     """
     Code to process ERA5 Data over the state of Illinois
+    https://github.com/google-research/arco-era5 
     
     Inputs:
         - variable (str) - Variable name to call, using ERA5 data names
+                           User can also call "vapor_pressure" (mb), "sfcWind" (m/s) and "relative_humidity" (decimal)
         - year_start (int) - First year you'd like to request
         - year_end (int) - Last year you'd like to request (inclusive)
+        - dataset (str) - Either use the "raw" or "analysis_ready" dataset from ARCO-ERA5 (for specifics, see 
+                            Github link)
     Outputs:
         - fin_array (Dataarray) - Dataarray with appropriate ERA5 data for the variable and timeframe chosen,
                                    interpolated using Delaunay triangulation
@@ -52,7 +56,7 @@ def era5_processing(variable, year_start, year_end, dataset):
     fs = fsspec.filesystem('gs')
     fs.ls('gs://gcp-public-data-arco-era5/co/')
     
-            
+    # Pulling appropriate variables for calculations        
     if variable == 'vapor_pressure':
         variable = '2m_dewpoint_temperature'
         calc = 'vapor_pressure'
@@ -115,10 +119,11 @@ def era5_processing(variable, year_start, year_end, dataset):
         fin_array = illinois_ds
         
     fin_array = fin_array.rename({'longitude':'lon', 'latitude':'lat'})
+    print(fin_array)
     
+    # Calculations
     if calc=='vapor_pressure':
-        dewpoint = fin_array - 273.15
-        fin_array = vapor_pressure(dewpoint)
+        fin_array = vapor_pressure(fin_array) # Calculation
     elif calc=='sfcWind':
         fin_array,_ = wind_tot(fin_array['10m_u_component_of_wind'], fin_array['10m_v_component_of_wind'])
     elif calc=='relative_humidity':
