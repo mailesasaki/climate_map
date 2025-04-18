@@ -218,7 +218,7 @@ All other data is located on [Google Earth Engine (GEE)](https://developers.goog
 | Extent | Worldwide |
 | Data Location | [Google Cloud](https://cloud.google.com/storage/docs/public-datasets/era5) |
 | Variables | [Currently Available Datasets](https://github.com/mailesasaki/climate_map/blob/main/ERA5/ERA5_Guide.ipynb) |
-| Time Extent | 1980 - 2021 |
+| Time Extent | 1940 - 2025 |
 
 ## Downloading and Processing
 
