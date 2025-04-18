@@ -191,7 +191,7 @@ def apparent_temperature(t2m, vp, wind):
     
     t2m_C = t2m - 273.15 # Kelvin to Celsius
     
-    apparent_temperature = t2m + 0.33*vp - 0.7*wind - 4.0
+    apparent_temperature = t2m_C + 0.33*vp - 0.7*wind - 4.0
     
     apparent_temperature += 273.15 # Celsius to Kelvin
     
@@ -225,7 +225,7 @@ def normal_effective_temperature(t2m, RH, wind):
     
     Inputs:
         t2m - (DataArray) 2m air temperature (K)
-        RH - (DataArray) 2m relative humidity (%)
+        RH - (DataArray) 2m relative humidity (decimal)
         wind - (DataArray) wind speed at 1.2 m above the ground (m/s)
     Output:
         net - (DataArray) normal effective temperature (K)
@@ -233,10 +233,11 @@ def normal_effective_temperature(t2m, RH, wind):
     """
     
     t2m_C = t2m - 273.15 # Kelvin to Celsius
+    RH_p = RH*100
     
     net = (37 - 
-           ((37-t2m_C)/(0.68-(0.0014*RH)+(1/(1.76+(1.4*wind**0.75)))))
-           - (0.29*t2m_C*(1-(0.01*RH))))
+           ((37-t2m_C)/(0.68-(0.0014*RH_p)+(1/(1.76+(1.4*wind**0.75)))))
+           - (0.29*t2m_C*(1-(0.01*RH_p))))
     
     net += 273.15 # Celsius to Kelvin
     
