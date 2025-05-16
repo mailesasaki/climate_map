@@ -14,6 +14,11 @@ class OpenLocaCat:
         Initialization
 
         Opens LOCA2 Catalog
+
+        Before running, make sure your .env file is in the same directory as this script and
+        contains the following line:
+        
+        S3_ENDPOINT_URL=https://rice1.osn.mghpcc.org
         """
         load_dotenv()
 
@@ -129,39 +134,40 @@ class OpenLocaCat:
         
         return dataset_full
         
-    def stats(self, dataset, coords):
+    def means(self, dataset, coords):
         """
-        Calculates statistics across the models for all variables
+        Calculates means across the models for all variables
+
+        (May add standard deviation and variance)
     
         Input:
             - dataset (Dataset or Dataarray) - An xarray dataset to have means done across each variable
             - coords (List of strings) - Takes mean across each dim. given in order of the list
         
         Output:
-            - data_stats (Dataset) - Contains calculations of the mean, standard deviation, and variance
-                of the dataset. All statistics stored in a coordinate called "stats"
+            - data_stats (Dataset) - Contains means across designated coords of the dataset
             
         """
 
         # Initializing each dataset for iteration
-        dataset_mean = dataset
-        dataset_stdev = dataset
-        dataset_var = dataset
+        dataset_mean = dataset.copy()
+        #dataset_stdev = dataset.copy()
+        #dataset_var = dataset.copy()
 
 
         # Iterating over each coordinate
         for coord in coords:
             dataset_mean = dataset_mean.mean(coord)
-            dataset_stdev = dataset_stdev.std(coord)
-            dataset_var = dataset_var.var(coord)
+            #dataset_stdev = dataset_stdev.std(coord)
+            #dataset_var = dataset_var.var(coord)
             
-        dataset_mean['stats'] = 'mean'
-        dataset_stdev['stats'] = 'stdev'
-        dataset_var['stats'] = 'variance'
+        #dataset_mean['stats'] = 'mean'
+        #dataset_stdev['stats'] = 'stdev'
+        #dataset_var['stats'] = 'variance'
 
         # Combining datasets along a coordinate called stats
-        data_stats = xr.concat([dataset_mean, dataset_stdev, dataset_var], 'stats')
-        return data_stats
+        #data_stats = xr.concat([dataset_mean, dataset_stdev, dataset_var], 'stats')
+        return dataset_mean
     
     def illinois(self, dataset):
         """
