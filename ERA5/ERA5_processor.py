@@ -7,8 +7,7 @@ import argparse
 from datetime import date
 from calculations.calculations import vapor_pressure
 from calculations.calculations import wind_tot
-import metpy
-from metpy.units import units 
+from calculations.calculations import rel_hum
 
 
 # Using code from https://github.com/google-research/arco-era5/blob/main/docs/0-Surface-Reanalysis-Walkthrough.ipynb 
@@ -127,9 +126,7 @@ def era5_processing(variable, year_start, year_end, dataset):
     elif calc=='sfcWind':
         fin_array,_ = wind_tot(fin_array['10m_u_component_of_wind'], fin_array['10m_v_component_of_wind'])
     elif calc=='relative_humidity':
-        fin_array = metpy.calc.relative_humidity_from_dewpoint(
-                                        fin_array['2m_temperature'] * units.K,
-                                        fin_array['2m_dewpoint_temperature'] * units.K)
+        fin_array = rel_hum(fin_array['2m_dewpoint_temperature'], fin_array['2m_temperature'])
     
     return fin_array
 

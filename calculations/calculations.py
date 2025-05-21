@@ -264,3 +264,22 @@ def humidex(t2m, vp):
     humidex += 273.15 # Celsius to Kelvin
     
     return humidex
+
+def rel_hum(dewpoint, t2m):
+    """
+    Calculate relative humidity from dewpoint temperature
+
+    Input:
+        dewpoint (DataArray) - 2m dewpoint temperature in K
+        t2m (DataArray) - 2m air temperature in K
+    Output:
+        relative_humidity (DataArray) - Relative humidity in decimals
+
+    """
+    vp_s = vapor_pressure(t2m) # Saturation vapor pressure
+    vp = vapor_pressure(dewpoint)      # Vapor pressure
+
+    relative_humidity = vp / vp_s
+
+    return relative_humidity
+        
