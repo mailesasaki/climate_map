@@ -33,7 +33,7 @@ def era5_heat_load(variable, section, i_date, f_date):
     if type(variable) == str:
         variable = [variable]
 
-    era5_filtered = (era5_heat.select(variable).filterDate(i_date, f_date))
+    era5_filtered = era5_heat.select(variable).filterDate(i_date, f_date)
 
     era5_dataset = xr.open_dataset(era5_filtered, engine='ee', scale=0.25, geometry=area,
                                      projection=era5_filtered.first().select(0).projection(),
