@@ -259,7 +259,7 @@ def prepare_climate_grid(
     """
     # Open the ERA5 dataset
     climate_data = xr.open_zarr(
-        "gs://gcp-public-data-arco-era5/co/single-level-reanalysis.zarr",
+        "gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3",
         chunks={"time": 48},
         consolidated=True,
         decode_timedelta=True,  # Explicitly set decode_timedelta

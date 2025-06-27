@@ -270,7 +270,7 @@ weather_variable_info: Dict[WeatherVariable, WeatherVariableInfo] = {
         config="era5_sfc.cfg",
     ),
     WeatherVariable.t2m: WeatherVariableInfo(
-        name="2 metre temperature",
+        name="2m_temperature",
         units="K",
         docs="https://apps.ecmwf.int/codes/grib/param-db?id=167",
         config="era5_sfc.cfg",

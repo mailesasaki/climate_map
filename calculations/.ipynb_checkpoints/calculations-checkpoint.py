@@ -265,6 +265,8 @@ def humidex(t2m, vp):
     
     return humidex
 
+
+
 def rel_hum(dewpoint, t2m):
     """
     Calculate relative humidity from dewpoint temperature
@@ -282,4 +284,53 @@ def rel_hum(dewpoint, t2m):
     relative_humidity = vp / vp_s
 
     return relative_humidity
+
+
+
+def wbt(RH, t2m):
+    """
+    https://journals.ametsoc.org/view/journals/apme/50/11/jamc-d-11-0143.1.xml 
+
+    Returns wet bulb temperature for a DataArray
+
+    Inputs:
+        t2m - (DataArray) 2m air temperature (K)
+        RH - (DataArray) 2m relative humidity (decimal)
+    Outputs:
+        T_w_K - (DataArray) 2m wet bulb temperature (K)
         
+    """
+    RH_p = RH * 100
+    t_C = t2m - 273.15
+    
+    T_w = ( ( t_C * np.arctan2(0.151977*((RH_p + 8.313659)**(1/2)), 1) ) + 
+              np.arctan2((t_C + RH_p), 1) - 
+              np.arctan2((RH_p - 1.676331), 1) +
+            ( 0.00391838 * (RH_p**(3/2)) * np.arctan2((0.023101*RH_p), 1) ) -
+              4.686035
+          )
+
+    T_w_K = T_w + 273.15
+    
+    return T_w_K
+
+
+
+def wbgt(t2m, T_w):
+    """
+    https://iopscience.iop.org/article/10.1088/1748-9326/ab7d04
+
+    Returns wet bulb globe temperature for a DataArray
+
+    Inputs:
+        t2m - (DataArray) 2m air temperature (K)
+        T_w - (DataArray) 2m wet bulb temperature (K)
+    Outputs:
+        wbgt - (DataArray) 2m wet bulb globe temperature (K)
+            - This is a simplified definition of WBGT for use with ERA5 data. This assumes
+                that one is in a shaded area
+
+    """
+    wbgt = (0.7*T_w) + (0.3*t2m)
+
+    return wbgt

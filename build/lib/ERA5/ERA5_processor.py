@@ -34,7 +34,7 @@ def interpolate(data, tri, mesh):
     result = np.einsum('...i,...i', data[:, tri.simplices[indices]], c)
     return np.where(indices == -1, np.nan, result)
 
-def era5_processing(variable, year_start, year_end, dataset):
+def era5_processing(variable, year_start, year_end, dataset=None):
     """
     Code to process ERA5 Data over the state of Illinois
     https://github.com/google-research/arco-era5 
@@ -69,6 +69,14 @@ def era5_processing(variable, year_start, year_end, dataset):
         calc = ''
         
 
+    # Opening dataset with zarr
+    reanalysis = xr.open_zarr(
+        'gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3', 
+        chunks={'time': 48},
+        consolidated=True,
+        )
+
+    
     if dataset == 'raw':
         # Opening dataset with zarr
         reanalysis = xr.open_zarr(
@@ -77,15 +85,6 @@ def era5_processing(variable, year_start, year_end, dataset):
             consolidated=True,
             )
     
-    if dataset == 'analysis_ready':
-        # Opening dataset with zarr
-        reanalysis = xr.open_zarr(
-            'gs://gcp-public-data-arco-era5/ar/full_37-1h-0p25deg-chunk-1.zarr-v3', 
-            chunks={'time': 48},
-            consolidated=True,
-            )
-        print('Done')
-
     # Dates
     i_date = str(year_start) + '-01-01'
     f_date = str(year_end)   + '-12-31'
