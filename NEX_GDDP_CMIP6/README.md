@@ -7,9 +7,9 @@ This tool helps download and process data from NEX-GDDP-CMIP6.
 [Usage guide for the code](./NEX-GDDP-CMIP6_Guide.ipynb)
 
 ## Table of Contents
-1. [Dataset details](##Dataset details)
+1. [Dataset details](##Dataset%20details)
 2. [Models](##Models)
-3. [Downloading and Processing](##Downloading and Processing)
+3. [Downloading and Processing](##Downloading%20and%20Processing)
 ## Dataset details
 
 |    |     |
@@ -18,7 +18,9 @@ This tool helps download and process data from NEX-GDDP-CMIP6.
 | Extent (historical, ssp245, ssp585) | Worldwide |
 | Extent (ssp370, downloaded) | Illinois |
 | Data Location | Google Earth Engine (data/keeling/a/cristi/a/downscaled_data/cmip6/nex_gddp for ssp370) |
-| Variables | huss [Mass fraction], sfcWind [m/s] |
+| Complete Variables | huss (Near-surface specific humidity) [Mass fraction], sfcWind (Near-surface wind speed) [m/s]|
+| Variables w/o ssp375 | hurs (Near surface relative humidity) [%], pr (Precipitation) [kg/m^2/s], rlds (Surface downwelling longwave) [W/m^2], rsds (Surface downwelling shortwave) [W/m^2], tas (Daily near-surface air temp) [K], tasmin (Daily min tas) [K], tasmax (Daily max tas) [K] |
+| Derived variables | vp (Vapor pressure) [mb] |  
 
 | Scenario | Years | Data Source |
 | :----: | :---: | :---: 
